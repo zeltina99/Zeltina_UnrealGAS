@@ -7,16 +7,18 @@
 UStatusAttributeSet::UStatusAttributeSet()
 {
 	InitHealth(100.0f);
+	InitMaxHealth(200.0f);
 }
 
 void UStatusAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
 	// 값 검증 및 제한(Clamp) 용도. 순수한 수학적 처리 용도
-
 	Super::PreAttributeChange(Attribute, NewValue);
 
 	if (Attribute == GetHealthAttribute())	// 이 함수가 Health 어트리뷰트가 변경되어서 호출되었는지 확인
 	{
+		NewValue = FMath::Clamp(NewValue, 0.0f, GetMaxHealth());
+
 		UE_LOG(LogTemp, Log, TEXT("Health가 변경되었다 (%.1f -> %.1f)"), GetHealth(), NewValue);
 
 		// 최대 체력을 넘지 않게 하기

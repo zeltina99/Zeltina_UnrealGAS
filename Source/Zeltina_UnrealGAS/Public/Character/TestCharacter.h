@@ -33,6 +33,11 @@ protected:
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent = nullptr;
+
+	UFUNCTION(BlueprintCallable)
+	void SubHealth();
+	UFUNCTION(BlueprintCallable)
+	void AddHealth();
 	
 private:
 	UPROPERTY()

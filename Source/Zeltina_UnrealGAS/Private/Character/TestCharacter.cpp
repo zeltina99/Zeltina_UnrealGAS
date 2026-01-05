@@ -49,3 +49,15 @@ void ATestCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 }
 
+void ATestCharacter::SubHealth()
+{
+	float MinHealth = StatusAttributeSet->GetHealth() - 10.0f;
+	StatusAttributeSet->SetHealth(MinHealth);
+}
+
+void ATestCharacter::AddHealth()
+{
+	float PlusHealth = StatusAttributeSet->GetHealth() + 10.0f;
+	StatusAttributeSet->SetHealth(PlusHealth);
+}
+
