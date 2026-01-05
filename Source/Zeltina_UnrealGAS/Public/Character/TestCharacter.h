@@ -8,7 +8,7 @@
 #include "GameplayEffectTypes.h"
 #include "TestCharacter.generated.h"
 
-class UStatusAttributeSet;
+class UResourceAttributeSet;
 class UWidgetComponent;
 
 UCLASS()
@@ -52,5 +52,5 @@ protected:
 
 private:
 	UPROPERTY()
-	TObjectPtr<UStatusAttributeSet> StatusAttributeSet = nullptr;
+	TObjectPtr<UResourceAttributeSet> ResourceAttributeSet = nullptr;
 };
