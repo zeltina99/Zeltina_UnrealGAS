@@ -5,36 +5,31 @@
 #include "CoreMinimal.h"
 #include "AttMacro.h"
 #include "AbilitySystemComponent.h"
-#include "ResourceAttributeSet.generated.h"
+#include "StatAttributeSet.generated.h"
 
 /**
  * 
  */
-
 UCLASS()
-class ZELTINA_UNREALGAS_API UResourceAttributeSet : public UAttributeSet
+class ZELTINA_UNREALGAS_API UStatAttributeSet : public UAttributeSet
 {
 	GENERATED_BODY()
 	
 public:
-	UResourceAttributeSet();
+	UStatAttributeSet();
 
 	virtual void PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) override;
 	virtual void PostGameplayEffectExecute(const struct FGameplayEffectModCallbackData& Data) override;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData Health;
-	ATTRIBUTE_ACCESSORS(UResourceAttributeSet, Health)
+	FGameplayAttributeData Strength;
+	ATTRIBUTE_ACCESSORS(UStatAttributeSet, Strength)
 
 	UPROPERTY(BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData MaxHealth;
-	ATTRIBUTE_ACCESSORS(UResourceAttributeSet, MaxHealth)
+	FGameplayAttributeData Dexterity;
+	ATTRIBUTE_ACCESSORS(UStatAttributeSet, Dexterity)
 
 	UPROPERTY(BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData Mana;
-	ATTRIBUTE_ACCESSORS(UResourceAttributeSet, Mana)
-
-	UPROPERTY(BlueprintReadOnly, Category = "Attribute")
-	FGameplayAttributeData MaxMana;
-	ATTRIBUTE_ACCESSORS(UResourceAttributeSet, MaxMana)
+	FGameplayAttributeData Intelligence;
+	ATTRIBUTE_ACCESSORS(UStatAttributeSet, Intelligence)
 };
