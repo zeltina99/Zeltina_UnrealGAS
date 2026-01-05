@@ -3,6 +3,8 @@
 
 #include "Character/TestCharacter.h"
 #include "AbilitySystemComponent.h"
+#include "Components/WidgetComponent.h"
+#include "UI/TestUserWidget.h"
 #include "GameAbilitySystem/StatusAttributeSet.h"
 
 // Sets default values
@@ -16,6 +18,10 @@ ATestCharacter::ATestCharacter()
 
 	// 어트리뷰트 셋 생성
 	StatusAttributeSet = CreateDefaultSubobject<UStatusAttributeSet>(TEXT("Status"));
+
+	// 위젯 컴포넌트 생성
+	WidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget"));
+	WidgetComponent->SetupAttachment(GetRootComponent());
 }
 
 void ATestCharacter::TestHealthChange(float Amount)
@@ -35,6 +41,11 @@ void ATestCharacter::BeginPlay()
 	if (AbilitySystemComponent)
 	{
 		AbilitySystemComponent->InitAbilityActorInfo(this, this);	// 어빌리티 시스템 컴포넌트 초기화
+
+		if (UTestUserWidget* Widget = Cast<UTestUserWidget>(WidgetComponent->GetUserWidgetObject()))
+		{
+			Widget->SetAbilitySystemComponent(AbilitySystemComponent);
+		}
 
 		// 초기화 이후에만 가능
 		FOnGameplayAttributeValueChange& onHealthChange = 
