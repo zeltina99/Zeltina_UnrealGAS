@@ -7,6 +7,8 @@
 #include "AbilitySystemInterface.h"
 #include "TestCharacter.generated.h"
 
+class UStatusAttributeSet;
+
 UCLASS()
 class ZELTINA_UNREALGAS_API ATestCharacter : public ACharacter, public IAbilitySystemInterface
 {
@@ -32,5 +34,7 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent = nullptr;
 	
-
+private:
+	UPROPERTY()
+	TObjectPtr<UStatusAttributeSet> StatusAttributeSet = nullptr;
 };
