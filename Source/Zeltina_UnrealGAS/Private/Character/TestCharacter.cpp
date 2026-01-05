@@ -18,6 +18,15 @@ ATestCharacter::ATestCharacter()
 	StatusAttributeSet = CreateDefaultSubobject<UStatusAttributeSet>(TEXT("Status"));
 }
 
+void ATestCharacter::TestHealthChange(float Amount)
+{
+	if (StatusAttributeSet)
+	{
+		float CurrentValue = StatusAttributeSet->GetHealth();
+		StatusAttributeSet->SetHealth(CurrentValue + Amount);
+	}
+}
+
 // Called when the game starts or when spawned
 void ATestCharacter::BeginPlay()
 {
@@ -40,6 +49,10 @@ void ATestCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	FString healthString = FString::Printf(TEXT("%.1f / %.1f"),
+		StatusAttributeSet->GetHealth(), StatusAttributeSet->GetMaxHealth());
+	UE_LOG(LogTemp, Log, TEXT("%s"), *healthString);
+	DrawDebugString(GetWorld(), GetActorLocation(), healthString, nullptr, FColor::White, 0, true);
 }
 
 // Called to bind functionality to input
@@ -48,16 +61,3 @@ void ATestCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
-
-void ATestCharacter::SubHealth()
-{
-	float MinHealth = StatusAttributeSet->GetHealth() - 10.0f;
-	StatusAttributeSet->SetHealth(MinHealth);
-}
-
-void ATestCharacter::AddHealth()
-{
-	float PlusHealth = StatusAttributeSet->GetHealth() + 10.0f;
-	StatusAttributeSet->SetHealth(PlusHealth);
-}
-

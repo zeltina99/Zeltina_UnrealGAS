@@ -7,7 +7,7 @@
 UStatusAttributeSet::UStatusAttributeSet()
 {
 	InitHealth(100.0f);
-	InitMaxHealth(200.0f);
+	InitMaxHealth(100.0f);
 }
 
 void UStatusAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)

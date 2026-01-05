@@ -20,6 +20,9 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; };
 
+	UFUNCTION(BlueprintCallable)
+	void TestHealthChange(float Amount);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -30,14 +33,13 @@ protected:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Test")
+	float TestValue = 10.0f;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent = nullptr;
-
-	UFUNCTION(BlueprintCallable)
-	void SubHealth();
-	UFUNCTION(BlueprintCallable)
-	void AddHealth();
 	
 private:
 	UPROPERTY()
