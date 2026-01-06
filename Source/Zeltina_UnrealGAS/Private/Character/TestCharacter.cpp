@@ -6,6 +6,7 @@
 #include "Components/WidgetComponent.h"
 #include "Interface/TwinResource.h"
 #include "GameAbilitySystem/ResourceAttributeSet.h"
+#include "GameAbilitySystem/StatusAttributeSet.h"
 
 // Sets default values
 ATestCharacter::ATestCharacter()
@@ -21,6 +22,7 @@ ATestCharacter::ATestCharacter()
 
 	// 어트리뷰트 셋 생성
 	ResourceAttributeSet = CreateDefaultSubobject<UResourceAttributeSet>(TEXT("Resource"));
+	StatusAttributeSet = CreateDefaultSubobject<UStatusAttributeSet>(TEXT("Status"));
 }
 
 void ATestCharacter::TestHealthChange(float Amount)
@@ -117,6 +119,16 @@ void ATestCharacter::BeginPlay()
 	}
 
 	Tag_EffectDamage = FGameplayTag::RequestGameplayTag(FName("Effect.Damage"));
+
+	if (InitializeEffectClass && AbilitySystemComponent)
+	{
+		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+		FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(InitializeEffectClass, 0, EffectContext);
+		if (SpecHandle.IsValid())
+		{
+			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+		}
+	}
 }
 
 // Called every frame
