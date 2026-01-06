@@ -32,6 +32,20 @@ void ATestCharacter::TestHealthChange(float Amount)
 	}
 }
 
+void ATestCharacter::TestSetByCaller(float Amount)
+{
+	if (AbilitySystemComponent)
+	{
+		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+		FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(TestEffectClass, 0, EffectContext);
+		if (SpecHandle.IsValid())
+		{
+			SpecHandle.Data->SetSetByCallerMagnitude( Tag_EffectDamage, Amount);
+			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+		}
+	}
+}
+
 // Called when the game starts or when spawned
 void ATestCharacter::BeginPlay()
 {
@@ -76,6 +90,8 @@ void ATestCharacter::BeginPlay()
 		//ResourceAttributeSet->Health = 50.0f;	// 절대 안됨
 		//ResourceAttributeSet->SetHealth(50.0f);	// 무조건 Setter로 변경해야 한다.
 	}
+
+	Tag_EffectDamage = FGameplayTag::RequestGameplayTag(FName("Effect.Damage"));
 }
 
 // Called every frame
@@ -83,10 +99,13 @@ void ATestCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	FString healthString = FString::Printf(TEXT("%.1f / %.1f"),
-		ResourceAttributeSet->GetHealth(), ResourceAttributeSet->GetMaxHealth());
-	//UE_LOG(LogTemp, Log, TEXT("%s"), *healthString);
-	DrawDebugString(GetWorld(), GetActorLocation(), healthString, nullptr, FColor::White, 0, true);
+	if (ResourceAttributeSet)
+	{
+		FString healthString = FString::Printf(TEXT("%.1f / %.1f"),
+			ResourceAttributeSet->GetHealth(), ResourceAttributeSet->GetMaxHealth());
+		//UE_LOG(LogTemp, Log, TEXT("%s"), *healthString);
+		DrawDebugString(GetWorld(), GetActorLocation(), healthString, nullptr, FColor::White, 0, true);
+	}
 }
 
 // Called to bind functionality to input
