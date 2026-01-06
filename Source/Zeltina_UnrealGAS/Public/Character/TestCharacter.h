@@ -9,6 +9,7 @@
 #include "TestCharacter.generated.h"
 
 class UResourceAttributeSet;
+class UStatusAttributeSet;
 class UWidgetComponent;
 
 UCLASS()
@@ -49,6 +50,8 @@ private:
 	void OnMaxHealthChange(const FOnAttributeChangeData& InData);
 	void OnManaChange(const FOnAttributeChangeData& InData);
 	void OnMaxManaChange(const FOnAttributeChangeData& InData);
+	void OnMoveSpeedChange(const FOnAttributeChangeData& InData);
+	void OnJumpPowerChange(const FOnAttributeChangeData& InData);
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Test")
@@ -70,6 +73,9 @@ protected:
 private:
 	UPROPERTY()
 	TObjectPtr<UResourceAttributeSet> ResourceAttributeSet = nullptr;
+
+	UPROPERTY()
+	TObjectPtr<UStatusAttributeSet> StatusAttributeSet = nullptr;
 
 	FGameplayTag Tag_EffectDamage;
 

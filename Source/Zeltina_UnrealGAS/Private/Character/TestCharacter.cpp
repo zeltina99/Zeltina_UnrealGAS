@@ -6,6 +6,8 @@
 #include "Components/WidgetComponent.h"
 #include "Interface/TwinResource.h"
 #include "GameAbilitySystem/ResourceAttributeSet.h"
+#include "GameAbilitySystem/StatusAttributeSet.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 ATestCharacter::ATestCharacter()
@@ -21,6 +23,9 @@ ATestCharacter::ATestCharacter()
 
 	// 어트리뷰트 셋 생성
 	ResourceAttributeSet = CreateDefaultSubobject<UResourceAttributeSet>(TEXT("Resource"));
+
+	// 스테이터스 어트리뷰트 셋 생성
+	StatusAttributeSet = CreateDefaultSubobject<UStatusAttributeSet>(TEXT("Status"));
 }
 
 void ATestCharacter::TestHealthChange(float Amount)
@@ -97,6 +102,14 @@ void ATestCharacter::BeginPlay()
 			AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UResourceAttributeSet::GetMaxManaAttribute());
 		onMaxManaChange.AddUObject(this, &ATestCharacter::OnMaxManaChange);
 
+		FOnGameplayAttributeValueChange& onMoveSpeedChange =
+			AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UStatusAttributeSet::GetMoveSpeedAttribute());
+		onMoveSpeedChange.AddUObject(this, &ATestCharacter::OnMoveSpeedChange);
+
+		FOnGameplayAttributeValueChange& onJumpPowerChange =
+			AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UStatusAttributeSet::GetJumpPowerAttribute());
+		onJumpPowerChange.AddUObject(this, &ATestCharacter::OnJumpPowerChange);
+
 	}
 
 	if (ResourceAttributeSet)
@@ -114,6 +127,15 @@ void ATestCharacter::BeginPlay()
 		}
 		//ResourceAttributeSet->Health = 50.0f;	// 절대 안됨
 		//ResourceAttributeSet->SetHealth(50.0f);	// 무조건 Setter로 변경해야 한다.
+	}
+
+	if (StatusAttributeSet)
+	{
+		if (GetCharacterMovement())
+		{
+			GetCharacterMovement()->MaxWalkSpeed = StatusAttributeSet->GetMoveSpeed();
+			GetCharacterMovement()->JumpZVelocity = StatusAttributeSet->GetJumpPower();
+		}
 	}
 
 	Tag_EffectDamage = FGameplayTag::RequestGameplayTag(FName("Effect.Damage"));
@@ -160,4 +182,20 @@ void ATestCharacter::OnManaChange(const FOnAttributeChangeData& InData)
 void ATestCharacter::OnMaxManaChange(const FOnAttributeChangeData& InData)
 {
 	ITwinResource::Execute_UpdateMaxMana(BarWidgetComponent->GetWidget(), ResourceAttributeSet->GetMaxMana());
+}
+
+void ATestCharacter::OnMoveSpeedChange(const FOnAttributeChangeData& InData)
+{
+	if (GetCharacterMovement())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = InData.NewValue;
+	}
+}
+
+void ATestCharacter::OnJumpPowerChange(const FOnAttributeChangeData& InData)
+{
+	if (GetCharacterMovement())
+	{
+		GetCharacterMovement()->JumpZVelocity = InData.NewValue;
+	}
 }
