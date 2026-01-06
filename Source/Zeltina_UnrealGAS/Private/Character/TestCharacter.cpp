@@ -20,7 +20,7 @@ ATestCharacter::ATestCharacter()
 	AbilitySystemComponent = CreateDefaultSubobject<UAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
 	// 어트리뷰트 셋 생성
-	ResourceAttributeSet = CreateDefaultSubobject<UResourceAttributeSet>(TEXT("Status"));
+	ResourceAttributeSet = CreateDefaultSubobject<UResourceAttributeSet>(TEXT("Resource"));
 }
 
 void ATestCharacter::TestHealthChange(float Amount)
@@ -44,8 +44,19 @@ void ATestCharacter::BeginPlay()
 		// 초기화 이후에만 가능
 		FOnGameplayAttributeValueChange& onHealthChange = 
 			AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UResourceAttributeSet::GetHealthAttribute());
-
 		onHealthChange.AddUObject(this, &ATestCharacter::OnHealthChange);	// Health가 변경되었을 때 실행될 함수 바인딩
+
+		FOnGameplayAttributeValueChange& onMaxHealthChange =
+			AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UResourceAttributeSet::GetMaxHealthAttribute());
+		onMaxHealthChange.AddUObject(this, &ATestCharacter::OnMaxHealthChange);
+
+		FOnGameplayAttributeValueChange& onManaChange =
+			AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UResourceAttributeSet::GetManaAttribute());
+		onManaChange.AddUObject(this, &ATestCharacter::OnManaChange);
+
+		FOnGameplayAttributeValueChange& onMaxManaChange =
+			AbilitySystemComponent->GetGameplayAttributeValueChangeDelegate(UResourceAttributeSet::GetMaxManaAttribute());
+		onMaxManaChange.AddUObject(this, &ATestCharacter::OnMaxManaChange);
 
 	}
 
@@ -91,8 +102,18 @@ void ATestCharacter::OnHealthChange(const FOnAttributeChangeData& InData)
 	ITwinResource::Execute_UpdateCurrentHealth(BarWidgetComponent->GetWidget(), ResourceAttributeSet->GetHealth());
 }
 
+void ATestCharacter::OnMaxHealthChange(const FOnAttributeChangeData& InData)
+{
+	ITwinResource::Execute_UpdateMaxHealth(BarWidgetComponent->GetWidget(), ResourceAttributeSet->GetMaxHealth());
+}
+
 void ATestCharacter::OnManaChange(const FOnAttributeChangeData& InData)
 {
 	UE_LOG(LogTemp, Log, TEXT("On Mana Change : %.1f -> %.1f"), InData.OldValue, InData.NewValue);
 	ITwinResource::Execute_UpdateCurrentMana(BarWidgetComponent->GetWidget(), ResourceAttributeSet->GetMana());
+}
+
+void ATestCharacter::OnMaxManaChange(const FOnAttributeChangeData& InData)
+{
+	ITwinResource::Execute_UpdateMaxMana(BarWidgetComponent->GetWidget(), ResourceAttributeSet->GetMaxMana());
 }
