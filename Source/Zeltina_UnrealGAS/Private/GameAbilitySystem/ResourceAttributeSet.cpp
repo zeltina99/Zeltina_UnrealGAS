@@ -26,6 +26,15 @@ void UResourceAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribu
 		// 최대 체력을 넘지 않게 하기
 		// 체력이 음수가 되지 않게 하기
 	}
+	if (Attribute == GetMaxHealthAttribute())	// MaxHealth가 변경되었는데
+	{
+		if (NewValue < GetHealth())	// Health가 MaxHealth의 새 값보다 크다면
+		{
+			// Health를 MaxHealth의 새 값으로 덮어써라
+			UAbilitySystemComponent* AbilityComp = GetOwningAbilitySystemComponentChecked();
+			AbilityComp->ApplyModToAttribute(GetHealthAttribute(), EGameplayModOp::Override, NewValue);
+		}
+	}
 }
 
 void UResourceAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallbackData& Data)
@@ -38,10 +47,21 @@ void UResourceAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCa
 		UE_LOG(LogTemp, Log, TEXT("현재 Health : %.1f"), GetHealth());
 		// 체력 변화 로직 호출
 		
+		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
+
 		if (GetHealth() <= 0.0f)
 		{
 			UE_LOG(LogTemp, Log, TEXT("사망"));
 			// 캐릭터 사망처리 로직 호출
 		}
+	}
+	if (Data.EvaluatedData.Attribute == GetMaxHealthAttribute())
+	{
+		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
+	}
+
+	if (Data.EvaluatedData.Attribute == GetManaAttribute())
+	{
+		SetMana(FMath::Clamp(GetMana(), 0.0f, GetMaxMana()));
 	}
 }
