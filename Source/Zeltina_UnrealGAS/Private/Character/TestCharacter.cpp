@@ -40,9 +40,34 @@ void ATestCharacter::TestSetByCaller(float Amount)
 		FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(TestEffectClass, 0, EffectContext);
 		if (SpecHandle.IsValid())
 		{
-			SpecHandle.Data->SetSetByCallerMagnitude( Tag_EffectDamage, Amount);
+			SpecHandle.Data->SetSetByCallerMagnitude(Tag_EffectDamage, Amount);
 			AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
 		}
+	}
+}
+
+void ATestCharacter::TestAddInfiniteEffect()
+{
+	if (TestInfiniteEffectClass && AbilitySystemComponent)
+	{
+		FGameplayEffectContextHandle EffectContext = AbilitySystemComponent->MakeEffectContext();
+		EffectContext.AddInstigator(this, this);
+
+		FGameplayEffectSpecHandle SpecHandle = AbilitySystemComponent->MakeOutgoingSpec(
+			TestInfiniteEffectClass, 0, EffectContext);
+
+		if (SpecHandle.IsValid())
+		{
+			TestInfinite = AbilitySystemComponent->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data.Get());
+		}
+	}
+}
+
+void ATestCharacter::TestRemoveInfiniteEffect()
+{
+	if (TestInfinite.IsValid())
+	{
+		AbilitySystemComponent->RemoveActiveGameplayEffect(TestInfinite);
 	}
 }
 
