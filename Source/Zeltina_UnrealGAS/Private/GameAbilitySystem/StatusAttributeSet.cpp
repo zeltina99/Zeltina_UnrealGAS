@@ -8,8 +8,20 @@
 UStatusAttributeSet::UStatusAttributeSet()
 {
 	InitAttackPower(10.0f);
+	InitCriticalRate(0.2f);
 	InitMoveSpeed(500.0f);
 	InitJumpPower(700.0f);
+}
+
+void UStatusAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
+{
+	Super::PreAttributeChange(Attribute, NewValue);
+
+	if (Attribute == GetCriticalRateAttribute())	// 이 함수가 Health 어트리뷰트가 변경되어서 호출되었는지 확인
+	{
+		// 0 ~ 1
+		NewValue = FMath::Clamp(NewValue, 0.0f, 1.0f);
+	}
 }
 
 void UStatusAttributeSet::PostAttributeChange(const FGameplayAttribute& Attribute, float OldValue, float NewValue)
