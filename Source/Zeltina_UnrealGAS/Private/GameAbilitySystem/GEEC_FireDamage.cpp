@@ -10,6 +10,7 @@ struct FFireDamageStatics
 {
 	DECLARE_ATTRIBUTE_CAPTUREDEF(Health);	// Health 어트리뷰트를 캡쳐할 것이라고 정의
 	DECLARE_ATTRIBUTE_CAPTUREDEF(AttackPower);
+	DECLARE_ATTRIBUTE_CAPTUREDEF(CriticalRate);
 
 	FFireDamageStatics()
 	{
@@ -18,6 +19,8 @@ struct FFireDamageStatics
 
 		// UStatusAttributeSet의 AttackPower를 캡쳐, 공격자로 부터 캡쳐, 공격 시점의 값을 가져오기
 		DEFINE_ATTRIBUTE_CAPTUREDEF(UStatusAttributeSet, AttackPower, Source, true);
+
+		DEFINE_ATTRIBUTE_CAPTUREDEF(UStatusAttributeSet, CriticalRate, Source, true);
 	}
 };
 
@@ -32,10 +35,11 @@ UGEEC_FireDamage::UGEEC_FireDamage()
 {
 	RelevantAttributesToCapture.Add(FireDamageStatics().HealthDef);	// 캡쳐할 어트리뷰트 목록에 추가
 	RelevantAttributesToCapture.Add(FireDamageStatics().AttackPowerDef);
+	RelevantAttributesToCapture.Add(FireDamageStatics().CriticalRateDef);
 
 	Tag_DebuffBurn = FGameplayTag::RequestGameplayTag(FName("State.Debuff.Burn"));
 	Tag_ElementFire = FGameplayTag::RequestGameplayTag(FName("Element.Fire"));
-	//Tag_EffectDamage = FGameplayTag::RequestGameplayTag(FName("Effect.Damage"));
+	//Tag_EffectDamage = FGameplayTag::RequestGameplayTag(FName("Effect.BaseDamage"));
 }
 
 void UGEEC_FireDamage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, 
@@ -52,7 +56,8 @@ void UGEEC_FireDamage::Execute_Implementation(const FGameplayEffectCustomExecuti
 		const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();	// 소스의 태그 가져오기
 		const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();	// 타겟의 태그 가져오기
 
-		float Damage = MinimumDamage;
+		float CurrentDamageMultiplier = DamageMultiplier;
+		float BaseDamage = MinimumDamage;
 
 		// 커브테이블에서 값 가져오기
 		if (DamageTable)
@@ -61,7 +66,13 @@ void UGEEC_FireDamage::Execute_Implementation(const FGameplayEffectCustomExecuti
 			FRealCurve* DamageCurve = DamageTable->FindCurve(FName("Damage"), TEXT("UGEEC_FireDamage"));	// 커브 테이블에서 커브가져오기
 			if (DamageCurve)
 			{
-				Damage = DamageCurve->Eval(EffectLevel);	// 커브에서 레벨에 해당하는 값 가져오기
+				BaseDamage = DamageCurve->Eval(EffectLevel);	// 커브에서 레벨에 해당하는 값 가져오기
+			}
+
+			FRealCurve* MultiplierCurve = DamageTable->FindCurve(FName("DamageMultiplier"), TEXT("UGEEC_FireDamage"));
+			if (MultiplierCurve)
+			{
+				CurrentDamageMultiplier = MultiplierCurve->Eval(EffectLevel);
 			}
 		}
 
@@ -73,36 +84,50 @@ void UGEEC_FireDamage::Execute_Implementation(const FGameplayEffectCustomExecuti
 			FireDamageStatics().AttackPowerDef,
 			EvaluateParameters,
 			AttackPower);
+
 		if (Result)
 		{
 			// 정상적으로 값을 가지고 왔다.
-			Damage += AttackPower;
+			BaseDamage += AttackPower;
 		}
 		else
 		{
 			// 값을 가져오지 못했다.
 		}
 
+		float CriticalRate = 0.0f;
+		ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(
+			FireDamageStatics().CriticalRateDef,
+			EvaluateParameters,
+			CriticalRate);
+
+		CriticalRate = FMath::Clamp(CriticalRate, 0.0f, 1.0f);
+
+		if (FMath::FRand() <= CriticalRate)
+		{
+			BaseDamage *= 2.0f;
+		}
+
 		//// SetbyCaller로 밖에서 설정한 데미지값 가져오기
-		//float Damage = Spec.GetSetByCallerMagnitude(Tag_EffectDamage, false, 1.0f);	// Tag_DataDamage에 설정된 값을 가져오기(못 가져오면 1)
-		//if (Damage <= 0.0f)
+		//float BaseDamage = Spec.GetSetByCallerMagnitude(Tag_EffectDamage, false, 1.0f);	// Tag_DataDamage에 설정된 값을 가져오기(못 가져오면 1)
+		//if (BaseDamage <= 0.0f)
 		//{
-		//	Damage = 1.0f;	// 혹시 음수면 최소값인 1로 설정
+		//	BaseDamage = 1.0f;	// 혹시 음수면 최소값인 1로 설정
 		//}
 
 		if (SourceTags && SourceTags->HasTag(Tag_ElementFire)		// 공격 데미지가 불속성이고
 			&& TargetTags && TargetTags->HasTag(Tag_DebuffBurn))	// 피격자가 화상 디버프를 가지고 있으면
 		{
-			Damage *= 2.0f;	// 그러면 데미지 두배
+			BaseDamage *= CurrentDamageMultiplier;	// 그러면 데미지 두배
 		}
 
-		if (Damage > 0.0f)
+		if (BaseDamage > 0.0f)
 		{
 			OutExecutionOutput.AddOutputModifier(
 				FGameplayModifierEvaluatedData(
 					FireDamageStatics().HealthProperty,	// Health 어트리뷰트를 변경한다.
 					EGameplayModOp::Additive,			// 더해 줄거다.
-					-Damage								// -Damage만큼 처리
+					-BaseDamage								// -BaseDamage만큼 처리
 				)
 			);
 		}

@@ -8,6 +8,7 @@
 UStatusAttributeSet::UStatusAttributeSet()
 {
 	InitAttackPower(10.0f);
+	InitCriticalRate(0.3f);
 	InitMoveSpeed(500.0f);
 	InitJumpPower(700.0f);
 }

@@ -25,6 +25,10 @@ public:
 	ATTRIBUTE_ACCESSORS(UStatusAttributeSet, AttackPower)
 
 	UPROPERTY(BlueprintReadOnly, Category = "Attribute")
+	FGameplayAttributeData CriticalRate;
+	ATTRIBUTE_ACCESSORS(UStatusAttributeSet, CriticalRate)
+
+	UPROPERTY(BlueprintReadOnly, Category = "Attribute")
 	FGameplayAttributeData MoveSpeed;
 	ATTRIBUTE_ACCESSORS(UStatusAttributeSet, MoveSpeed)
 
