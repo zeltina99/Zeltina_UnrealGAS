@@ -22,13 +22,17 @@ bool AGCNA_Test::OnActive_Implementation(AActor* MyTarget, const FGameplayCuePar
 
 	if (MyTarget)
 	{
+
 		//Parameters.EffectContext.GetHitResult : 히트 정보를 가져올 수 있다(=부딪친 위치나 노멀 벡터를 구할 수 있다.)
 		// 중요 : GetHitResult는 값을 설정해 줬어야 쓸 수 있다.
-		SpawnedVFX = UNiagaraFunctionLibrary::SpawnSystemAtLocation(	// 파티클 만들어서 저장해 놓기
-			GetWorld(),
-			TestVFX,
-			MyTarget->GetActorLocation(),	// 생성 위치
-			MyTarget->GetActorRotation()	// 생성할 때 회전
+		SpawnedVFX = UNiagaraFunctionLibrary::SpawnSystemAttached(	// 파티클 만들어서 저장해 놓기
+			TestVFX,                        // 1. 스폰할 나이아가라 시스템 (변수)
+			MyTarget->GetRootComponent(),   // 2. 어디에 붙일지 (컴포넌트)
+			FName("NAME_None"),             // 3. 소켓 이름 (없으면 NAME_None)
+			FVector(0, 0, -90.0f),          // 4. 위치 오프셋 (소켓 기준 얼마나 떨어질지)
+			FRotator::ZeroRotator,          // 5. 회전 오프셋
+			EAttachLocation::SnapToTarget,  // 6. 붙이는 규칙 (딱 달라붙기)
+			true                            // 7. 효과가 끝나면 컴포넌트 자동 삭제 여부
 		);
 
 		//UNiagaraFunctionLibrary::SpawnSystemAttached()
