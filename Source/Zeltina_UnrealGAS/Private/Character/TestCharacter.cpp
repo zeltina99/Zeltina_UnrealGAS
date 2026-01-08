@@ -104,7 +104,6 @@ void ATestCharacter::BeginPlay()
 				)
 			);
 		}
-
 		if (SuperJumpClass)
 		{
 			AbilitySystemComponent->GiveAbility(
@@ -112,6 +111,17 @@ void ATestCharacter::BeginPlay()
 					SuperJumpClass,											// 어빌리티 클래스
 					1,														// 레벨
 					static_cast<int32>(EAbilityInputID::SuperJump),			// 입력 ID
+					this													// 소스
+				)
+			);
+		}
+		if (ChargingJumpClass)
+		{
+			AbilitySystemComponent->GiveAbility(
+				FGameplayAbilitySpec(
+					ChargingJumpClass,										// 어빌리티 클래스
+					1,														// 레벨
+					static_cast<int32>(EAbilityInputID::ChargingJump),		// 입력 ID
 					this													// 소스
 				)
 			);
@@ -190,6 +200,8 @@ void ATestCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	{
 		EnhancedInput->BindAction(IA_Ability1, ETriggerEvent::Started, this, &ATestCharacter::OnAbility1Press);
 		EnhancedInput->BindAction(IA_Ability2, ETriggerEvent::Started, this, &ATestCharacter::OnAbility2Press);
+		EnhancedInput->BindAction(IA_Ability3, ETriggerEvent::Started, this, &ATestCharacter::OnAbility3Press);
+		EnhancedInput->BindAction(IA_Ability3, ETriggerEvent::Completed, this, &ATestCharacter::OnAbility3Release);
 	}
 }
 
@@ -236,9 +248,17 @@ void ATestCharacter::OnAbility2Press()
 void ATestCharacter::OnAbility3Press()
 {
 	UE_LOG(LogTemp, Log, TEXT("OnAbility3Press"));
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->AbilityLocalInputPressed(static_cast<int32>(EAbilityInputID::ChargingJump));
+	}
 }
 
 void ATestCharacter::OnAbility3Release()
 {
 	UE_LOG(LogTemp, Log, TEXT("OnAbility3Release"));
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->AbilityLocalInputReleased(static_cast<int32>(EAbilityInputID::ChargingJump));
+	}
 }
