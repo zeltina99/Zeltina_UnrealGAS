@@ -55,6 +55,7 @@ private:
 	void OnMaxManaChange(const FOnAttributeChangeData& InData);
 
 	void OnAbility1Press();
+	void OnAbility2Press();
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Test")
@@ -72,6 +73,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ability")
 	TSubclassOf<UGameplayAbility> HasteClass = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ability")
+	TSubclassOf<UGameplayAbility> SuperJumpClass = nullptr;
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Ability")
 	TObjectPtr<UAbilitySystemComponent> AbilitySystemComponent = nullptr;
@@ -81,6 +85,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	TObjectPtr<class UInputAction> IA_Ability1 = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	TObjectPtr<class UInputAction> IA_Ability2 = nullptr;
 
 private:
 	UPROPERTY()
