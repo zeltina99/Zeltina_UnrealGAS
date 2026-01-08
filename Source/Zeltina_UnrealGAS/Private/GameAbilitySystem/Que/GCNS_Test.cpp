@@ -15,7 +15,7 @@ bool UGCNS_Test::OnExecute_Implementation(AActor* MyTarget, const FGameplayCuePa
 	if (MyTarget)
 	{
 		FVector SpawnLocation = MyTarget->GetActorLocation();
-		SpawnLocation.Z += 50.0f;
+		SpawnLocation.Z += 100.0f;
 
 		UNiagaraFunctionLibrary::SpawnSystemAtLocation(
 			GetWorld(),
