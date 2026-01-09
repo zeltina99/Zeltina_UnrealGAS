@@ -9,7 +9,7 @@
 AGCNA_Test::AGCNA_Test()
 {
 	GameplayCueTag = FGameplayTag::RequestGameplayTag(FName("GameplayCue.TestActor"));
-	bAutoDestroyOnRemove = true;	// 재사용시 파이클 재생이 끝나지 않는 문제 해결을 위해 필요
+	bAutoDestroyOnRemove = true;	// 재사용시 파티클 재생이 끝나지 않는 문제 해결을 위해 필요
 }
 
 bool AGCNA_Test::OnActive_Implementation(AActor* MyTarget, const FGameplayCueParameters& Parameters)

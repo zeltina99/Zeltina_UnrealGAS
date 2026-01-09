@@ -23,20 +23,7 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override { return AbilitySystemComponent; };
 
-	UFUNCTION(BlueprintCallable)
-	void TestHealthChange(float Amount);
-
-	UFUNCTION(BlueprintCallable)
-	void TestSetByCaller(float Amount);
-
-	UFUNCTION(BlueprintCallable)
-	void TestAddInfiniteEffect();
-
-	UFUNCTION(BlueprintCallable)
-	void TestRemoveInfiniteEffect();
-
-	UFUNCTION(BlueprintCallable)
-	void TestAbility();
+	
 
 protected:
 	// Called when the game starts or when spawned
@@ -60,6 +47,25 @@ private:
 	void OnAbility3Release();
 
 public:
+	UFUNCTION(BlueprintCallable)
+	void TestHealthChange(float Amount);
+
+	UFUNCTION(BlueprintCallable)
+	void TestSetByCaller(float Amount);
+
+	UFUNCTION(BlueprintCallable)
+	void TestAddInfiniteEffect();
+
+	UFUNCTION(BlueprintCallable)
+	void TestRemoveInfiniteEffect();
+
+	UFUNCTION(BlueprintCallable)
+	void TestAbility();
+
+	UFUNCTION(BlueprintCallable)
+	void TestLineTrace();
+
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Test")
 	float TestValue = 10.0f;
 
@@ -68,6 +74,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Test")
 	TSubclassOf<class UGameplayEffect> TestInfiniteEffectClass = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Test")
+	TSubclassOf<class UGameplayEffect> TestHitEffectClass = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Initialize")
 	TSubclassOf<class UGameplayEffect> InitializeEffectClass = nullptr;
